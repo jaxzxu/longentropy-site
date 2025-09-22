@@ -40,6 +40,8 @@
 
       .card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 18px; box-shadow: 0 12px 30px rgba(0,0,0,0.30); }
       .card h2 { margin: 2px 0 8px; font-size: 18px; color: #f5f5fb; }
+      .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+      .card-head h2 { margin: 2px 0 0; }
       .card .sub { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
 
       .aum { display: grid; gap: 8px; }
@@ -76,8 +78,10 @@
 
       <div class="grid">
         <section class="card">
-          <h2>Assets Under Management</h2>
-          <div class="sub">Sourced live from Google&nbsp;Sheets <span id="sheetState" class="chip">Loading…</span></div>
+          <div class="card-head">
+            <h2>Assets Under Management</h2>
+            <span id="sheetState" class="chip">Loading…</span>
+          </div>
           <div class="aum">
             <div id="aumValue" class="value">—</div>
             <div class="updated">Last updated: <span id="lastUpdated">—</span></div>
