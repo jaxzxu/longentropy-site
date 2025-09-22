@@ -12,68 +12,126 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
       :root {
-        --bg: #0b0b0d;
-        --card: #121216;
-        --text: #e9e9ef;
-        --muted: #a8a8b3;
+        color-scheme: dark;
+        --base-bg: #0f1010;
+        --body-bg: #181a1b;
+        --text-base: #f7f8f8;
+        --text-alt: #dfe1e2;
         --accent: #ff9900; /* Bitcoin orange */
         --ring: rgba(255,153,0,0.25);
+        --chip-bg: rgba(255,153,0,0.14);
+        --chip-border: rgba(255,153,0,0.25);
+        --card-bg: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        --card-border: rgba(255,255,255,0.06);
+        --card-shadow: 0 12px 30px rgba(0,0,0,0.30);
+        --hover-bg: rgba(255,255,255,0.02);
+        --table-border: rgba(255,255,255,0.08);
+        --table-row-border: rgba(255,255,255,0.06);
+        --legend-color: #e6e6f0;
+        --bg-gradient: radial-gradient(1200px 800px at 20% -10%, #191923, transparent 60%), var(--base-bg);
+      }
+      [data-theme="light"] {
+        color-scheme: light;
+        --base-bg: #f7f8f8;
+        --body-bg: #ffffff;
+        --text-base: #181a1b;
+        --text-alt: #3d4143;
+        --card-bg: linear-gradient(180deg, rgba(15,16,16,0.03), rgba(15,16,16,0.01));
+        --card-border: rgba(24,26,27,0.08);
+        --card-shadow: 0 12px 24px rgba(15,16,16,0.08);
+        --hover-bg: rgba(15,16,16,0.04);
+        --table-border: rgba(24,26,27,0.12);
+        --table-row-border: rgba(24,26,27,0.08);
+        --chip-bg: rgba(255,153,0,0.12);
+        --chip-border: rgba(255,153,0,0.24);
+        --legend-color: #3d4143;
+        --bg-gradient: radial-gradient(1200px 800px at 20% -10%, rgba(255,255,255,0.7), transparent 60%), var(--base-bg);
       }
       * { box-sizing: border-box; }
       html, body { height: 100%; }
       body {
         margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        background: radial-gradient(1200px 800px at 20% -10%, #191923, transparent 60%), var(--bg);
-        color: var(--text);
+        background: var(--bg-gradient);
+        background-color: var(--base-bg);
+        color: var(--text-base);
         -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+        transition: background-color 0.3s ease, color 0.3s ease;
       }
-      a { color: var(--text); text-decoration: none; }
+      a { color: var(--text-base); text-decoration: none; transition: color 0.2s ease; }
       a:hover { color: var(--accent); }
       .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px 80px; }
-      header { display: flex; align-items: center; gap: 16px; }
+      header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+      .identity { display: flex; align-items: center; gap: 16px; min-width: 0; }
       header img.logo { height: 56px; width: auto; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.35)); }
       header .brand { display: flex; flex-direction: column; }
       header h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.3px; }
-      header p.tag { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+      header p.tag { margin: 2px 0 0; color: var(--text-alt); font-size: 14px; }
+      .theme-toggle {
+        border: 1px solid var(--card-border);
+        background: var(--body-bg);
+        color: var(--text-base);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .theme-toggle:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px var(--ring);
+      }
+      .theme-toggle:hover {
+        background: var(--hover-bg);
+        border-color: var(--ring);
+      }
 
       .grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 28px; }
       @media (min-width: 900px) { .grid { grid-template-columns: 420px 1fr; } }
 
-      .card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 18px; box-shadow: 0 12px 30px rgba(0,0,0,0.30); }
-      .card h2 { margin: 2px 0 8px; font-size: 18px; color: #f5f5fb; }
-      .card .sub { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+      .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; box-shadow: var(--card-shadow); transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
+      .card h2 { margin: 2px 0 8px; font-size: 18px; color: var(--text-base); }
+      .card .sub { color: var(--text-alt); font-size: 13px; margin-bottom: 10px; }
 
       .aum { display: grid; gap: 8px; }
       .aum .value { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.5px; }
-      .aum .updated { color: var(--muted); font-size: 13px; }
+      .aum .updated { color: var(--text-alt); font-size: 13px; }
 
       .pie-wrap { position: relative; min-height: 360px; }
       canvas { width: 100% !important; height: 360px !important; }
 
       table { width: 100%; border-collapse: collapse; font-size: 14px; }
-      thead th { text-align: left; color: var(--muted); font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 10px 8px; }
-      tbody td { padding: 10px 8px; border-bottom: 1px dashed rgba(255,255,255,0.06); }
-      tbody tr:hover { background: rgba(255,255,255,0.02); }
+      thead th { text-align: left; color: var(--text-alt); font-weight: 600; border-bottom: 1px solid var(--table-border); padding: 10px 8px; }
+      tbody td { padding: 10px 8px; border-bottom: 1px dashed var(--table-row-border); }
+      tbody tr:hover { background: var(--hover-bg); }
       .right { text-align: right; }
-      .chip { font-size: 12px; padding: 4px 8px; border-radius: 999px; background: rgba(255,153,0,0.14); color: var(--accent); border: 1px solid var(--ring); }
+      .chip { font-size: 12px; padding: 4px 8px; border-radius: 999px; background: var(--chip-bg); color: var(--accent); border: 1px solid var(--chip-border); }
 
-      footer { margin-top: 36px; color: var(--muted); font-size: 14px; display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-      .email { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.06); border-radius: 999px; background: rgba(255,255,255,0.02); }
-      .email:hover { border-color: var(--ring); box-shadow: 0 0 0 6px var(--ring) inset; }
+      footer { margin-top: 36px; color: var(--text-alt); font-size: 14px; display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+      .email { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--card-border); border-radius: 999px; background: var(--hover-bg); transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease; }
+      .email:hover { border-color: var(--ring); box-shadow: 0 0 0 6px var(--ring) inset; background: var(--body-bg); }
 
-      .hint { font-size: 12px; color: var(--muted); }
+      .hint { font-size: 12px; color: var(--text-alt); }
       .err { color: #fba6a6; }
     </style>
   </head>
   <body>
     <div class="wrap">
       <header>
-        <!-- Place your logo file named 'satssymbol.png' in the same folder as this index.html -->
-        <img class="logo" src="satssymbol.png" alt="Long Entropy Capital logo" />
-        <div class="brand">
-          <h1>Long Entropy Capital</h1>
-          <p class="tag">Digital Capital × Digital Intelligence</p>
+        <div class="identity">
+          <!-- Place your logo file named 'satssymbol.png' in the same folder as this index.html -->
+          <img class="logo" src="satssymbol.png" alt="Long Entropy Capital logo" />
+          <div class="brand">
+            <h1>Long Entropy Capital</h1>
+            <p class="tag">Digital Capital × Digital Intelligence</p>
+          </div>
         </div>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="true" aria-label="Toggle color theme" title="Switch to light mode">☀️ Light</button>
       </header>
 
       <div class="grid">
@@ -118,6 +176,75 @@
     </div>
 
     <script>
+      const themeToggle = document.getElementById('themeToggle');
+      const THEME_STORAGE_KEY = 'lec-theme';
+
+      function readStoredTheme() {
+        try { return localStorage.getItem(THEME_STORAGE_KEY); } catch { return null; }
+      }
+
+      function writeStoredTheme(theme) {
+        try { localStorage.setItem(THEME_STORAGE_KEY, theme); } catch {}
+      }
+
+      function getLegendColor() {
+        const styles = getComputedStyle(document.documentElement);
+        return (styles.getPropertyValue('--legend-color').trim() || styles.getPropertyValue('--text-alt').trim() || styles.getPropertyValue('--text-base').trim() || '#666');
+      }
+
+      function applyTheme(theme, persist = true) {
+        const nextTheme = theme === 'light' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = nextTheme;
+        document.documentElement.style.colorScheme = nextTheme;
+        if (persist) writeStoredTheme(nextTheme);
+        if (themeToggle) {
+          const isDark = nextTheme === 'dark';
+          themeToggle.setAttribute('aria-pressed', String(isDark));
+          themeToggle.textContent = isDark ? '☀️ Light' : '🌙 Dark';
+          const label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+          themeToggle.title = label;
+          themeToggle.setAttribute('aria-label', label);
+        }
+        if (window._pie) {
+          const legendColor = getLegendColor();
+          if (
+            legendColor &&
+            window._pie.options &&
+            window._pie.options.plugins &&
+            window._pie.options.plugins.legend &&
+            window._pie.options.plugins.legend.labels
+          ) {
+            window._pie.options.plugins.legend.labels.color = legendColor;
+          }
+          window._pie.update();
+        }
+      }
+
+      function initTheme() {
+        const storedTheme = readStoredTheme();
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        applyTheme(storedTheme || (mediaQuery.matches ? 'dark' : 'light'), false);
+        if (themeToggle) {
+          themeToggle.addEventListener('click', () => {
+            const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+            applyTheme(next);
+          });
+        }
+        const handleSchemeChange = (event) => {
+          if (readStoredTheme()) return;
+          applyTheme(event.matches ? 'dark' : 'light', false);
+        };
+        try {
+          mediaQuery.addEventListener('change', handleSchemeChange);
+        } catch (err) {
+          if (typeof mediaQuery.addListener === 'function') {
+            mediaQuery.addListener(handleSchemeChange);
+          }
+        }
+      }
+
+      initTheme();
+
       // ========================
       //  CONFIG — update as needed
       // ========================
@@ -204,12 +331,13 @@
         if (window._pie) window._pie.destroy();
         const labels = rows.map(r => r.name);
         const data = rows.map(r => +(r.weight.toFixed(2)));
+        const legendColor = getLegendColor();
         window._pie = new Chart(ctx, {
           type: 'pie',
           data: { labels, datasets: [{ data }] },
           options: {
             plugins: {
-              legend: { position: 'bottom', labels: { color: '#e6e6f0' } },
+              legend: { position: 'bottom', labels: { color: legendColor } },
               tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.formattedValue}%` } }
             }
           }
