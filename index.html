@@ -430,26 +430,27 @@
 
       function renderPie(rows) {
         lastPortfolioRows = rows;
-        const ctx = document.getElementById('pie');
+        const canvas = document.getElementById('pie');
+        if (!canvas) return;
         if (window._pie) window._pie.destroy();
+
         const labels = rows.map(r => r.name);
         const data = rows.map(r => +(r.weight.toFixed(2)));
-        codex/add-dark-and-light-mode-toggle-p1fnjo
         const styles = getComputedStyle(document.documentElement);
         const legendColor = styles.getPropertyValue('--muted').trim() || '#cccccc';
         const tooltipColor = styles.getPropertyValue('--text').trim() || '#ffffff';
         const tooltipBg = styles.getPropertyValue('--tooltip-bg').trim() || '#1f1f26';
-
+        const borderColor = styles.getPropertyValue('--bg').trim() || '#0b0b0d';
         const colors = getPieColors(data.length);
-         main
-        window._pie = new Chart(ctx, {
+
+        window._pie = new Chart(canvas, {
           type: 'pie',
           data: {
             labels,
             datasets: [{
               data,
               backgroundColor: colors,
-              borderColor: '#0b0b0d',
+              borderColor,
               borderWidth: 2,
               borderRadius: 6,
               hoverOffset: 10,
@@ -460,22 +461,11 @@
             maintainAspectRatio: false,
             layout: { padding: 12 },
             plugins: {
-       codex/add-dark-and-light-mode-toggle-p1fnjo
-              legend: { position: 'bottom', labels: { color: legendColor } },
-              tooltip: {
-                backgroundColor: tooltipBg,
-                titleColor: tooltipColor,
-                bodyColor: tooltipColor,
-                callbacks: { label: (ctx) => `${ctx.label}: ${ctx.formattedValue}%` }
-              }
-            }
-          }
-
               legend: {
                 position: 'bottom',
                 align: 'center',
                 labels: {
-                  color: '#d6d6dd',
+                  color: legendColor,
                   usePointStyle: true,
                   pointStyle: 'circle',
                   padding: 16,
@@ -488,11 +478,11 @@
                 },
               },
               tooltip: {
-                backgroundColor: 'rgba(18,18,22,0.85)',
-                borderColor: 'rgba(255,255,255,0.08)',
+                backgroundColor: tooltipBg,
+                borderColor: borderColor,
                 borderWidth: 1,
-                titleColor: '#f5f5fb',
-                bodyColor: '#f5f5fb',
+                titleColor: tooltipColor,
+                bodyColor: tooltipColor,
                 padding: 10,
                 callbacks: {
                   label: (ctx) => `${ctx.label}: ${ctx.formattedValue}%`,
@@ -506,7 +496,6 @@
               easing: 'easeOutQuart',
             },
           },
-        main
         });
       }
 
