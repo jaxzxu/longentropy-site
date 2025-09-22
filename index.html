@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,6 +10,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+      (function() {
+        const storageKey = 'lec-theme';
+        const docEl = document.documentElement;
+        let theme = docEl.dataset.theme || 'dark';
+        try {
+          const stored = localStorage.getItem(storageKey);
+          if (stored === 'light' || stored === 'dark') {
+            theme = stored;
+          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            theme = 'dark';
+          } else {
+            theme = 'light';
+          }
+        } catch (err) {
+          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            theme = 'dark';
+          } else {
+            theme = 'light';
+          }
+        }
+        docEl.dataset.theme = theme;
+        docEl.style.colorScheme = theme;
+      })();
+    </script>
     <style>
       :root {
         color-scheme: dark;
@@ -30,7 +55,7 @@
         --legend-color: #e6e6f0;
         --bg-gradient: radial-gradient(1200px 800px at 20% -10%, #191923, transparent 60%), var(--base-bg);
       }
-      [data-theme="light"] {
+      :root[data-theme="light"] {
         color-scheme: light;
         --base-bg: #f7f8f8;
         --body-bg: #ffffff;
@@ -81,6 +106,7 @@
         transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         white-space: nowrap;
         flex-shrink: 0;
+        margin-left: auto;
       }
       .theme-toggle:focus-visible {
         outline: none;
@@ -222,8 +248,12 @@
 
       function initTheme() {
         const storedTheme = readStoredTheme();
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        applyTheme(storedTheme || (mediaQuery.matches ? 'dark' : 'light'), false);
+        const mediaQuery = typeof window.matchMedia === 'function'
+          ? window.matchMedia('(prefers-color-scheme: dark)')
+          : null;
+        const current = document.documentElement.dataset.theme;
+        const fallback = mediaQuery && mediaQuery.matches ? 'dark' : 'light';
+        applyTheme(storedTheme || current || fallback, false);
         if (themeToggle) {
           themeToggle.addEventListener('click', () => {
             const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
@@ -234,11 +264,13 @@
           if (readStoredTheme()) return;
           applyTheme(event.matches ? 'dark' : 'light', false);
         };
-        try {
-          mediaQuery.addEventListener('change', handleSchemeChange);
-        } catch (err) {
-          if (typeof mediaQuery.addListener === 'function') {
-            mediaQuery.addListener(handleSchemeChange);
+        if (mediaQuery) {
+          try {
+            mediaQuery.addEventListener('change', handleSchemeChange);
+          } catch (err) {
+            if (typeof mediaQuery.addListener === 'function') {
+              mediaQuery.addListener(handleSchemeChange);
+            }
           }
         }
       }
